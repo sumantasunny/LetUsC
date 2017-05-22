@@ -1,0 +1,15 @@
+#include <stdio.h>
+
+int main(void) {
+	int arr = {
+	    {10,20},
+	    {20,30},
+	    {30,20},
+	    {20,5},
+	    {5,50},
+	};
+	
+	
+	
+	return 0;
+}

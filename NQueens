@@ -1,7 +1,8 @@
 #include <stdio.h>
 
-int nQueens = 5;
-int arr[5][5];
+#define nQueens 4
+
+int arr[nQueens][nQueens];
 
 void initArray(){
     int i=0, j=0;

@@ -2,7 +2,7 @@
 
 #define N 6
 
-int matrixChainMultiplication(int M[5][5], int a[6]){
+int matrixChainMultiplication(int M[N][N], int a[N]){
     int l, i, j, k, q;
     for(i=1; i<N; i++){
         M[i][i] = 0;
@@ -24,9 +24,8 @@ int matrixChainMultiplication(int M[5][5], int a[6]){
 }
 
 int main() {
-    int M[6][6];
-    int a[6] = {20,35,5,5,10,20};
+    int M[N][N];
+    int a[N] = {20,35,5,5,10,20};
 	printf("%d", matrixChainMultiplication(M, a));
 	return 0;
 }
-

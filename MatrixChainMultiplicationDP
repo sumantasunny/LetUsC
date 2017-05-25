@@ -1,0 +1,32 @@
+#include <stdio.h>
+
+#define N 6
+
+int matrixChainMultiplication(int M[5][5], int a[6]){
+    int l, i, j, k, q;
+    for(i=1; i<N; i++){
+        M[i][i] = 0;
+    }
+    
+    for(l=2; l<N; l++){
+        for(i=1; i<(N-l+1); i++){
+            j = l+i-1;
+            M[i][j] = -1;
+            for(k=i;k<j;k++){
+                q = M[i][k] + M[k+1][j] + a[i-1]*a[k]*a[j];
+                if(M[i][j] == -1 || M[i][j] > q){
+                    M[i][j] = q;
+                }
+            }
+        }
+    }
+    return M[1][N-1];
+}
+
+int main() {
+    int M[6][6];
+    int a[6] = {20,35,5,5,10,20};
+	printf("%d", matrixChainMultiplication(M, a));
+	return 0;
+}
+

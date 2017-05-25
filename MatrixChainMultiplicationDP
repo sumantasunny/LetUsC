@@ -1,9 +1,41 @@
-#include <stdio.h>
+#include<stdio.h>
+#include<string.h>
 
-#define N 6
+int N = 0;
 
-int matrixChainMultiplication(int M[N][N], int a[N]){
+void printTheSolution(int start, int end, int b[N][N]){
+    printf("(%d*%d) > ", start, end);
+    if((b[start][end]+1) == end){
+        printf("((%d*%d)*%d)\n", start, b[start][end], end);
+    }
+    else if(b[start][end] == start){
+        printf("(%d*(%d*%d))\n", start, (b[start][end]+1), end);
+    }
+    else{
+        printf("((%d*%d)*(%d*%d))\n", start, b[start][end], (b[start][end]+1), end);
+    }
+    
+    if((b[start][end] - start)>1){
+        end = b[start][end];
+        printf("x:(%d)>", end);
+        printTheSolution(start, end, b);
+    }
+    else if((end - (b[start][end]+1))>1){
+        start = b[start][end] + 1;
+        printf("y:(%d)>", start);
+        printTheSolution(start, end, b);
+    }
+}
+
+int matrixChainMultiplication(int M[N][N], int a[N], int b[N][N]){
     int l, i, j, k, q;
+    
+    for(i=0; i<N; i++){
+        for(j=0; j<N; j++){
+            b[i][j] = 0;
+        }
+    }
+    
     for(i=1; i<N; i++){
         M[i][i] = 0;
     }
@@ -16,16 +48,38 @@ int matrixChainMultiplication(int M[N][N], int a[N]){
                 q = M[i][k] + M[k+1][j] + a[i-1]*a[k]*a[j];
                 if(M[i][j] == -1 || M[i][j] > q){
                     M[i][j] = q;
+                    b[i][j] = k;
                 }
             }
         }
     }
+    
+    for(i=1; i<N; i++){
+        for(j=1; j<N; j++){
+            printf("%d :: ",b[i][j]);
+        }
+        printf("\n");
+    }
+    
+    //For this values only
+    //printf("((%d*%d)*(%d*%d))\n", 1, b[1][N-1], (b[1][N-1]+1), N-1);
+    //printf("=>((%d*%d)*((%d*%d)*%d))\n", 1, b[1][N-1], (b[1][N-1]+1), (b[(b[1][N-1]+1)][N-1]), N-1);
+    
+    int start = 1, end = N-1;
+    printTheSolution(start, end, b);
+    
     return M[1][N-1];
 }
 
 int main() {
+    int a[] = {20,35,50, 8, 45, 5,10,20};
+    
+    N = sizeof(a)/sizeof(a[0]);
+    
     int M[N][N];
-    int a[N] = {20,35,5,5,10,20};
-	printf("%d", matrixChainMultiplication(M, a));
+    int b[N][N];
+    
+	printf("%d", matrixChainMultiplication(M, a, b));
 	return 0;
 }
+

@@ -24,28 +24,32 @@ void resetColor(){
 
 struct Graph{
     int edges[10][10];
-}g1;
+}g1, g1t;
 
 struct Stack2{
     int top;
     int stackArr[10];
-}st1, st2;
+};
+
+typedef struct Stack2 STK;
+STK st1, st2;
 
 void addEdge(int source, int end){
-   g1.edges[source][end] = 1; 
+   g1.edges[source][end] = 1;
 }
 
-void push(int item){
-    int t = st1.top;
-    st1.stackArr[t] = item;
-    st1.top = t +1;
+void push(int item, STK * _st){
+    //printf("_st.top :: %d\n",_st->top);
+    int t = _st->top;
+    _st->stackArr[t] = item;
+    _st->top = t + 1;
 }
 
-int pop(){
-    int t = st1.top;
+int pop(STK * _st){
+    int t = _st->top;
     t--;
-    int item = st1.stackArr[t];
-    st1.top = t;
+    int item = _st->stackArr[t];
+    _st->top = t;
     return item;
 }
 
@@ -68,13 +72,13 @@ void topoLogicalSortUtil(int node){
             topoLogicalSortUtil(i);
         }
     }
-    push(node);
+    push(node, &st1);
 }
 
 void printStack(){
     int i;
     for(i=0; i<N_V; i++){
-        printf("%d,", pop());
+        printf("%d,", pop(&st1));
     }
     printf("\n");
 }
@@ -109,15 +113,15 @@ void loopTest(){
     }
     
     if(loopFlag){
-        printf("\nLoop Found Count: %d", loopFlag);
+        printf("\nLoop Found Count: %d\n", loopFlag);
         loopFlag=0;
     }
     else{
-        printf("\nLoop not Found");
+        printf("\nLoop not Found\n");
     }
 }
 
-int biPartiteFlag = 1;
+/*int biPartiteFlag = 1;
 void checkingBipartiteUtil(int node, int color){
     int i;
     nodeStatus[node] = visited;
@@ -142,7 +146,6 @@ void checkingBipartiteUtil(int node, int color){
     }
 }
 
-//Not working
 void biPartiteTest(){
     int i=0;
     for(i=0; i<N_V; i++){
@@ -158,13 +161,88 @@ void biPartiteTest(){
         printf("\nNot BiPartite Graph");
         biPartiteFlag=1;
     }
+}*/
+
+void stronglyConnectedComponentsUtil(int node){
+    int i;
+    nodeStatus[node] = visited;
+    for(i=0; i<N_V; i++){
+        if(g1.edges[node][i] && !nodeStatus[i]){
+            stronglyConnectedComponentsUtil(i);
+        }
+    }
+    //printf(">>%d", node);
+    push(node, &st2);
+}
+
+void transposeGraph(){
+    int i, j;
+    for(i=0; i<N_V; i++){
+        for(j=0; j<N_V; j++){
+            g1t.edges[j][i] = g1.edges[i][j];
+        }
+    }
+    
+    for(i=0; i<N_V; i++){
+        printf("|");
+        for(j=0; j<N_V; j++){
+            printf("%d ", g1.edges[i][j]);
+        }
+        printf("|\n");
+    }
+    
+    printf("\n");
+    
+    for(i=0; i<N_V; i++){
+        printf("|");
+        for(j=0; j<N_V; j++){
+            printf("%d ", g1t.edges[i][j]);
+        }
+        printf("|\n");
+    }
+}
+
+void dfsUtilForStronglyConnectedComponents(int node){
+    int i;
+    nodeStatus[node] = visited;
+    printf("%d, ", node);
+    for(i=0; i<N_V; i++){
+        if(g1t.edges[node][i] && !nodeStatus[i]){
+            dfsUtilForStronglyConnectedComponents(i);
+        }
+    }
+}
+
+void stronglyConnectedComponents(){
+    resetStatus();
+    int i=0;
+    for(i=0; i<N_V; i++){
+        if(!nodeStatus[i]){
+            stronglyConnectedComponentsUtil(i);
+        }
+    }
+    //printf("\nstronglyConnectedComponents %d", 1);
+    
+    transposeGraph();
+    
+    resetStatus();
+    while(st2.top>0){
+      int node = pop(&st2);
+      //printf("\nstronglyConnectedComponents %d", node);
+      if(!nodeStatus[node]){
+        dfsUtilForStronglyConnectedComponents(node);
+        printf("\n");
+      }
+    }
 }
 
 
 int main(void) {
     st1.top = 0;
+    st2.top = 0;
     
-    addEdge(0, 1);
+    //addEdge(0, 1);
+    addEdge(1, 0);
     addEdge(1, 2);
     addEdge(2, 3);
     addEdge(3, 0);
@@ -182,9 +260,11 @@ int main(void) {
     resetStatus();
     loopTest();
     
+    //resetStatus();
+    //biPartiteTest();
+    
     resetStatus();
-    biPartiteTest();
+    stronglyConnectedComponents();
     
 	return 0;
 }
-
